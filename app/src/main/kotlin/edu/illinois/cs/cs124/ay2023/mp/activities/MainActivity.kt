@@ -43,7 +43,7 @@ class MainActivity :
 
         // Load this activity's layout and set the title
         setContentView(R.layout.activity_main)
-        title = "Search Course"
+        title = "Search Courses"
 
         // Setup the list adapter for the list of summaries
         listAdapter = SummaryListAdapter(summaries, this)
