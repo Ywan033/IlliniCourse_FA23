@@ -19,10 +19,11 @@ open class Summary(val subject: String, val number: String, val label: String = 
         // TODO("Not yet implemented")
         val numCompare = this.number.compareTo(other.number)
         return if (numCompare != 0) {
-            numCompare // if the num is not same, it gonna sort now
+            // if the num is not same, it gonna sort now
+            numCompare
         } else {
-            this.subject.compareTo(other.subject)
             // if the num is  same, it gonna sort by the subject
+            this.subject.compareTo(other.subject)
         }
     }
 
@@ -30,5 +31,17 @@ open class Summary(val subject: String, val number: String, val label: String = 
 }
 
 fun List<Summary>.filter(search: String): List<Summary> {
-    return this
+    // trim the search string
+    val trimedsearchName = search.lowercase().trim()
+
+    // filter the list and check if it contains the "trimedsearchName"
+    val filteredList = this.filter { it.toString().lowercase().contains(trimedsearchName) }
+
+    // the first default sort
+    val firstSort = filteredList.sorted()
+
+    val finalSort = firstSort.sortedBy { summary ->
+        summary.toString().lowercase().indexOf(trimedsearchName)
+    } // sort the summaries by the position of the search term, with earlier matches appearing first.
+    return finalSort
 }
