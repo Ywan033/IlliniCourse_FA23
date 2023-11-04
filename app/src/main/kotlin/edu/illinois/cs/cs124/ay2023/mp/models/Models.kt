@@ -14,7 +14,15 @@ package edu.illinois.cs.cs124.ay2023.mp.models
  */
 open class Summary(val subject: String, val number: String, val label: String = "") : Comparable<Summary> {
     override fun compareTo(other: Summary): Int {
-        TODO("Not yet implemented")
+        // first compare by number
+        // Then by subject
+        // TODO("Not yet implemented")
+        val numCompare = this.number.compareTo(other.number)
+        return if (numCompare != 0) {
+            numCompare
+        } else {
+            this.subject.compareTo(other.subject)
+        }
     }
 
     override fun toString() = "$subject $number: $label"
