@@ -45,11 +45,13 @@ object Client {
      * @param callback the callback that will receive the result
      */
     fun getSummary(callback: (summaries: ResultMightThrow<List<Summary>>) -> Any?) {
+        Log.d("DataFetch", "Client.getSummary making summary request")
         val request = StringRequest(
             Request.Method.GET,
             "${CourseableApplication.SERVER_URL}/summary/",
             { response: String ->
                 try {
+                    Log.d("DataFetch", "Client received server response")
                     val summaries: List<Summary> = objectMapper.readValue(response)
                     callback(ResultMightThrow(summaries))
                 } catch (e: JsonProcessingException) {

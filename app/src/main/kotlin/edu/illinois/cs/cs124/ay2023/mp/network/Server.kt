@@ -36,6 +36,7 @@ object Server : Dispatcher() {
 
     /** Return the JSON with the list of course summaries. */
     private fun getSummaries(): MockResponse {
+        println("DataFetch: Server getSummaries method called")
         return summariesJSON.makeOKJSONResponse()
     }
 

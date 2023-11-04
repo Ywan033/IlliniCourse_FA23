@@ -54,6 +54,7 @@ class MainActivity :
         recyclerView.adapter = listAdapter
 
         // Initiate a request for the summary list
+        Log.d("DataFetch", "MainActivity calling getSummary")
         Client.getSummary(summaryCallback)
 
         // Register this component as a callback for changes to the search view component shown above
@@ -67,8 +68,9 @@ class MainActivity :
     /** Callback used to update the list of summaries during onCreate. */
     private val summaryCallback = { result: ResultMightThrow<List<Summary>> ->
         try {
+            Log.d("DataFetch", "Client returned data")
             // Sort the list for nice initial display
-            summaries = result.value!!
+            summaries = result.value!!.sorted() // might be nice to sort the list here..
             listAdapter.summaries = summaries
         } catch (e: Exception) {
             e.printStackTrace()
