@@ -19,9 +19,10 @@ open class Summary(val subject: String, val number: String, val label: String = 
         // TODO("Not yet implemented")
         val numCompare = this.number.compareTo(other.number)
         return if (numCompare != 0) {
-            numCompare
+            numCompare // if the num is not same, it gonna sort now
         } else {
             this.subject.compareTo(other.subject)
+            // if the num is  same, it gonna sort by the subject
         }
     }
 
