@@ -12,6 +12,14 @@ package edu.illinois.cs.cs124.ay2023.mp.models
  * @property number the summary's number
  * @property label the summary's label
  */
-open class Summary(val subject: String, val number: String, val label: String = "") {
+open class Summary(val subject: String, val number: String, val label: String = "") : Comparable<Summary> {
+    override fun compareTo(other: Summary): Int {
+        TODO("Not yet implemented")
+    }
+
     override fun toString() = "$subject $number: $label"
+}
+
+fun List<Summary>.filter(search: String): List<Summary> {
+    return this
 }
