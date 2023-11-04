@@ -88,6 +88,8 @@ class MainActivity :
      * @return true because we handled the action
      */
     override fun onQueryTextChange(query: String): Boolean {
+        // TODO
+        // filter the list to the summary and update the list to the ueser.
         return true
     }
 

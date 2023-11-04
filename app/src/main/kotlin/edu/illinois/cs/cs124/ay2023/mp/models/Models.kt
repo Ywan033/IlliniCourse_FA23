@@ -40,8 +40,8 @@ fun List<Summary>.filter(search: String): List<Summary> {
     val firstSort = filteredList.sorted()
 
     val finalSort = firstSort.sortedBy { summary ->
+        // by using the lambda expression
         summary.toString().lowercase().indexOf(trimedsearchName)
     } // sort the summaries by the position of the search term, with earlier matches appearing first.
     return finalSort
 }
-
