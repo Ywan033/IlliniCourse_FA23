@@ -10,6 +10,7 @@ import edu.illinois.cs.cs124.ay2023.mp.R
 import edu.illinois.cs.cs124.ay2023.mp.adapters.SummaryListAdapter
 import edu.illinois.cs.cs124.ay2023.mp.helpers.ResultMightThrow
 import edu.illinois.cs.cs124.ay2023.mp.models.Summary
+import edu.illinois.cs.cs124.ay2023.mp.models.filter
 import edu.illinois.cs.cs124.ay2023.mp.network.Client
 
 /** Main activity showing the course summary list. */
@@ -89,7 +90,17 @@ class MainActivity :
      */
     override fun onQueryTextChange(query: String): Boolean {
         // TODO
-        // filter the list to the summary and update the list to the ueser.
+        Log.d("SearchBar", "User entered: $query")
+
+        // filter the list
+        // filter the search bar by user's input and update the list shown to the user
+        try {
+            val filteredQuery = summaries.filter(query)
+            listAdapter.summaries = filteredQuery
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.e(logTag, "Error occurred during filtering: $e")
+        }
         return true
     }
 
