@@ -48,4 +48,9 @@ fun List<Summary>.filter(search: String): List<Summary> {
 
 // TODO: Finish course class
 
-class Course
+open class Course(
+    subject: String,
+    number: String,
+    label: String = " ",
+    val description: String
+) : Summary(subject, number, label)
