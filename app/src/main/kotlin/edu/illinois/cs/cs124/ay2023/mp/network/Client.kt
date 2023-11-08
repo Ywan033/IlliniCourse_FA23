@@ -17,6 +17,7 @@ import edu.illinois.cs.cs124.ay2023.mp.application.CourseableApplication
 import edu.illinois.cs.cs124.ay2023.mp.helpers.CHECK_SERVER_RESPONSE
 import edu.illinois.cs.cs124.ay2023.mp.helpers.ResultMightThrow
 import edu.illinois.cs.cs124.ay2023.mp.helpers.objectMapper
+import edu.illinois.cs.cs124.ay2023.mp.models.Course
 import edu.illinois.cs.cs124.ay2023.mp.models.Summary
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -62,6 +63,12 @@ object Client {
         )
 
         requestQueue.add(request)
+    }
+
+    fun getCourse(summary: Summary, callback: (course: ResultMightThrow<Course>) -> Any?) {
+        // finish getCCourse method
+        // similar to get summary method
+        callback(ResultMightThrow(IllegalStateException("TODO")))
     }
 
     // You should not need to modify the code below

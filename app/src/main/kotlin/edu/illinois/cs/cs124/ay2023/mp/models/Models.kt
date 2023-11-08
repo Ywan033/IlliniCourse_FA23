@@ -45,3 +45,7 @@ fun List<Summary>.filter(search: String): List<Summary> {
     } // sort the summaries by the position of the search term, with earlier matches appearing first.
     return finalSort
 }
+
+// TODO: Finish course class
+
+class Course
