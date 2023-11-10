@@ -69,7 +69,7 @@ object Client {
         // finish getCCourse method
         // similar to get summary method
         callback(ResultMightThrow(IllegalStateException("TODO")))
-        // just for using it, but it need to be delete when I do the client test
+        // just for using summary, but it need to be delete when I do the client test
         print(summary)
     }
 
