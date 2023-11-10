@@ -35,7 +35,7 @@ object Server : Dispatcher() {
     /** List of summaries as a JSON string. */
     private val summariesJSON: String
 
-    // private val coursesssJSON: String // add for test 1, should I need to keep it ?
+    // private val coursesssJSON: String // add for test 1
     private var courseList = listOf<Course>() // create a list of course
 
     /** Return the JSON with the list of course summaries. */
