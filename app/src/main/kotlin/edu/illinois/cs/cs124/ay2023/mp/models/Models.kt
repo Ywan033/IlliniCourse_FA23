@@ -46,11 +46,10 @@ fun List<Summary>.filter(search: String): List<Summary> {
     return finalSort
 }
 
-// TODO: Finish course class
-
+// TODO finish this code for TEST 0
 open class Course(
     subject: String,
     number: String,
     label: String = " ",
-    val description: String
+    val description: String,
 ) : Summary(subject, number, label)
