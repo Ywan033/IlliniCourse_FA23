@@ -4,6 +4,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import edu.illinois.cs.cs124.ay2023.mp.application.CourseableApplication
 import edu.illinois.cs.cs124.ay2023.mp.helpers.CHECK_SERVER_RESPONSE
 import edu.illinois.cs.cs124.ay2023.mp.helpers.objectMapper
+import edu.illinois.cs.cs124.ay2023.mp.models.Course
 import edu.illinois.cs.cs124.ay2023.mp.models.Summary
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -34,10 +35,38 @@ object Server : Dispatcher() {
     /** List of summaries as a JSON string. */
     private val summariesJSON: String
 
+    // private val coursesssJSON: String // add for test 1, should I need to keep it ?
+    private var courseList = listOf<Course>() // create a list of course
+
     /** Return the JSON with the list of course summaries. */
     private fun getSummaries(): MockResponse {
-        println("DataFetch: Server getSummaries method called")
+        // println("DataFetch: Server getSummaries method called")
+        // Log.d("Server","getSummaries called")
         return summariesJSON.makeOKJSONResponse()
+    }
+
+    private fun getCourse(path: String): MockResponse {
+        // TODO FINISH THIS METHOD
+        // path: CS/101 or CS/173
+
+        val (courseSubject, courseNumber) = path.split("/").map { it.trim() }
+        // split the course subject and course number
+
+        // make sure they are not empty:
+        if (courseSubject.isNotEmpty() && courseNumber.isNotEmpty()) {
+            // check if they are matched
+            val courSE = courseList.find { it.subject == courseSubject && it.number == courseNumber }
+            if (courSE != null) {
+                // deserialization:
+                val courseJSON = objectMapper.writeValueAsString(courSE)
+                return courseJSON.makeOKJSONResponse()
+            } else {
+                return httpNotFound
+            }
+        } else {
+            // return "httpBadRequest" if it is empty
+            return httpBadRequest
+        }
     }
 
     /**
@@ -70,8 +99,12 @@ object Server : Dispatcher() {
 
                 path == "/summary/" && method == "GET" -> getSummaries()
 
+                // Add support for /course/ routes here
+                path.startsWith("/course/") && method == "GET" -> getCourse(path.removePrefix("/course/"))
+                // get course only get course/number
                 // Default is not found
-                else -> httpNotFound
+                else ->
+                    httpNotFound
             }
         } catch (e: Exception) {
             // Log an error and return 500 if an exception is thrown
@@ -92,13 +125,20 @@ object Server : Dispatcher() {
 
         // Iterate through the list of JsonNodes returned by deserialization
         val summaries = mutableListOf<Summary>()
+        // val coursesss = mutableListOf<Course>() // add for test 1
+
         for (node in objectMapper.readTree(json)) {
+            // save complete course information
+            val courses = objectMapper.readValue<Course>(node.toString()) // add for test 1
+            courseList += courses // add for test 1
+
             // Deserialize as Summary and add to the list
             val summary = objectMapper.readValue<Summary>(node.toString())
             summaries += summary
         }
         // Convert the List<Summary> to a String and save it
         summariesJSON = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(summaries)
+        // coursesssJSON = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(courseList)
 
         val server = MockWebServer().apply { dispatcher = this@Server }
         server.start(CourseableApplication.DEFAULT_SERVER_PORT)
