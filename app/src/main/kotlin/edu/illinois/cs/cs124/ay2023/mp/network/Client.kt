@@ -84,7 +84,6 @@ object Client {
         )
 
         requestQueue.add(request)
-
     }
 
     // You should not need to modify the code below

@@ -1,14 +1,17 @@
 package edu.illinois.cs.cs124.ay2023.mp.activities
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.fasterxml.jackson.core.JsonProcessingException
 import edu.illinois.cs.cs124.ay2023.mp.R
 import edu.illinois.cs.cs124.ay2023.mp.adapters.SummaryListAdapter
 import edu.illinois.cs.cs124.ay2023.mp.helpers.ResultMightThrow
+import edu.illinois.cs.cs124.ay2023.mp.helpers.objectMapper
 import edu.illinois.cs.cs124.ay2023.mp.models.Summary
 import edu.illinois.cs.cs124.ay2023.mp.models.filter
 import edu.illinois.cs.cs124.ay2023.mp.network.Client
@@ -47,7 +50,24 @@ class MainActivity :
         title = "Search Courses"
 
         // Setup the list adapter for the list of summaries
-        listAdapter = SummaryListAdapter(summaries, this)
+        listAdapter = SummaryListAdapter(summaries, this) { summary ->
+            val intent = Intent(this, CourseActivity::class.java)
+            // add information to the intent and use the field summary
+            // convert this object into a string containing the information
+            // do this by using serialization
+            // we have object "summary" and we want to convert it to string by serialization
+            // then, stick it into the intent
+
+            val Convertedstring = try {
+                objectMapper.writeValueAsString(summary)
+            } catch (e: JsonProcessingException) {
+                Log.e(logTag, "ERROR HAPPEN DURING SERIALIZATION!!!")
+                throw e
+            }
+            // add the serialization string to the intent
+            intent.putExtra("summary", Convertedstring)
+            startActivity(intent)
+        }
 
         // Add the list to the layout
         val recyclerView = findViewById<RecyclerView>(R.id.recycler_view)
