@@ -57,14 +57,14 @@ class MainActivity :
             // we have object "summary" and we want to convert it to string by serialization
             // then, stick it into the intent
 
-            val Convertedstring = try {
+            val convertedString = try {
                 objectMapper.writeValueAsString(summary)
             } catch (e: Exception) {
                 Log.e(logTag, "ERROR HAPPEN DURING SERIALIZATION!!!")
                 throw e
             }
             // add the serialization string to the intent
-            intent.putExtra("summary", Convertedstring)
+            intent.putExtra("summary", convertedString)
             startActivity(intent)
         }
 
