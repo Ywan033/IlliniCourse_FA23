@@ -7,7 +7,6 @@ import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.fasterxml.jackson.core.JsonProcessingException
 import edu.illinois.cs.cs124.ay2023.mp.R
 import edu.illinois.cs.cs124.ay2023.mp.adapters.SummaryListAdapter
 import edu.illinois.cs.cs124.ay2023.mp.helpers.ResultMightThrow
@@ -60,7 +59,7 @@ class MainActivity :
 
             val Convertedstring = try {
                 objectMapper.writeValueAsString(summary)
-            } catch (e: JsonProcessingException) {
+            } catch (e: Exception) {
                 Log.e(logTag, "ERROR HAPPEN DURING SERIALIZATION!!!")
                 throw e
             }
