@@ -68,9 +68,23 @@ object Client {
     fun getCourse(summary: Summary, callback: (course: ResultMightThrow<Course>) -> Any?) {
         // finish getCCourse method
         // similar to get summary method
-        callback(ResultMightThrow(IllegalStateException("TODO")))
-        // just for using summary, but it need to be delete when I do the client test
-        print(summary)
+        val request = StringRequest(
+            Request.Method.GET,
+            "${CourseableApplication.SERVER_URL}/course/${summary.subject}/${summary.number}/", // changed
+            { response: String ->
+                try {
+                    Log.d("DataFetch", "Client received server response")
+                    val course: Course = objectMapper.readValue(response) // deserialization
+                    callback(ResultMightThrow(course)) // invoke course
+                } catch (e: JsonProcessingException) {
+                    callback(ResultMightThrow(e))
+                }
+            },
+            { error: VolleyError -> callback(ResultMightThrow(error)) },
+        )
+
+        requestQueue.add(request)
+
     }
 
     // You should not need to modify the code below
