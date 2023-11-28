@@ -18,6 +18,7 @@ import edu.illinois.cs.cs124.ay2023.mp.helpers.CHECK_SERVER_RESPONSE
 import edu.illinois.cs.cs124.ay2023.mp.helpers.ResultMightThrow
 import edu.illinois.cs.cs124.ay2023.mp.helpers.objectMapper
 import edu.illinois.cs.cs124.ay2023.mp.models.Course
+import edu.illinois.cs.cs124.ay2023.mp.models.Rating
 import edu.illinois.cs.cs124.ay2023.mp.models.Summary
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -84,6 +85,14 @@ object Client {
         )
 
         requestQueue.add(request)
+    }
+
+    fun getRating(summary: Summary, callback: (course: ResultMightThrow<Rating>) -> Any?) {
+        callback(ResultMightThrow(IllegalStateException()))
+    }
+
+    fun postRating(rating: Rating, callback: (course: ResultMightThrow<Rating>) -> Any?) {
+        callback(ResultMightThrow(IllegalStateException()))
     }
 
     // You should not need to modify the code below
