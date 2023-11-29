@@ -5,6 +5,7 @@ import edu.illinois.cs.cs124.ay2023.mp.application.CourseableApplication
 import edu.illinois.cs.cs124.ay2023.mp.helpers.CHECK_SERVER_RESPONSE
 import edu.illinois.cs.cs124.ay2023.mp.helpers.objectMapper
 import edu.illinois.cs.cs124.ay2023.mp.models.Course
+import edu.illinois.cs.cs124.ay2023.mp.models.Rating
 import edu.illinois.cs.cs124.ay2023.mp.models.Summary
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -69,6 +70,32 @@ object Server : Dispatcher() {
         }
     }
 
+    private fun getRating(path: String): MockResponse {
+        // TODO FINISH THIS METHOD
+        // path: CS/101 or CS/173
+
+        val (courseSubject, courseNumber) = path.split("/").map { it.trim() }
+        // split the course subject and course number
+
+        // make sure they are not empty:
+        if (courseSubject.isNotEmpty() && courseNumber.isNotEmpty()) {
+            // check if they are matched
+            val course = courseList.find { it.subject == courseSubject && it.number == courseNumber }
+            if (course != null) {
+                // add rating things
+                val rating = Rating(course, Rating.NOT_RATED)
+                // deserialization:
+                val courseJSON = objectMapper.writeValueAsString(rating)
+                return courseJSON.makeOKJSONResponse()
+            } else {
+                return httpNotFound
+            }
+        } else {
+            // return "httpBadRequest" if it is empty
+            return httpBadRequest
+        }
+    }
+
     /**
      * HTTP request dispatcher.
      *
@@ -103,6 +130,10 @@ object Server : Dispatcher() {
                 path.startsWith("/course/") && method == "GET" -> getCourse(path.removePrefix("/course/"))
                 // get course only get course/number
                 // Default is not found
+                //
+                // add support for rating things here
+                path.startsWith("/rating/") && method == "GET" -> getRating(path.removePrefix("/rating/"))
+
                 else ->
                     httpNotFound
             }

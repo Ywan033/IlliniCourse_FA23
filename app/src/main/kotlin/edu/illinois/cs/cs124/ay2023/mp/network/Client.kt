@@ -87,8 +87,33 @@ object Client {
         requestQueue.add(request)
     }
 
-    fun getRating(summary: Summary, callback: (course: ResultMightThrow<Rating>) -> Any?) {
-        callback(ResultMightThrow(IllegalStateException()))
+    fun getRating(summary: Summary, callback: (result: ResultMightThrow<Rating>) -> Any?) {
+        val request = StringRequest(
+            Request.Method.GET,
+            "${CourseableApplication.SERVER_URL}/rating/${summary.subject}/${summary.number}",
+            { response: String ->
+                try {
+                    Log.d("DataFetch", "Client received server response")
+                    val rating: Rating = objectMapper.readValue(response) // Deserialize Rating value
+                    val ratingValue: Float = rating.rating // initially be  not.Rated
+                    callback(ResultMightThrow(Rating(rating.summary, ratingValue)))
+                } catch (e: JsonProcessingException) {
+                    callback(ResultMightThrow(e))
+                }
+            },
+            { error: VolleyError ->
+                if (error.networkResponse.statusCode == HttpURLConnection.HTTP_BAD_REQUEST) {
+                    // Return a not rated Rating instance if the course is not found
+                    callback(ResultMightThrow(Rating(summary, Rating.NOT_RATED)))
+                } else if (error.networkResponse.statusCode == HttpURLConnection.HTTP_NOT_FOUND) {
+                    callback(ResultMightThrow(Rating(summary, Rating.NOT_RATED)))
+                } else {
+                    callback(ResultMightThrow(Rating(summary, Rating.NOT_RATED)))
+                }
+            }
+        )
+
+        requestQueue.add(request)
     }
 
     fun postRating(rating: Rating, callback: (course: ResultMightThrow<Rating>) -> Any?) {
