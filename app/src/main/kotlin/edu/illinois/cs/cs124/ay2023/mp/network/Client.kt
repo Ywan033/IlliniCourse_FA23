@@ -112,7 +112,6 @@ object Client {
                 }
             }
         )
-
         requestQueue.add(request)
     }
 
