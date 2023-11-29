@@ -118,6 +118,8 @@ object Client {
 
     fun postRating(rating: Rating, callback: (course: ResultMightThrow<Rating>) -> Any?) {
         callback(ResultMightThrow(IllegalStateException()))
+        // post: client send things to server
+        // how the client can update the rating
     }
 
     // You should not need to modify the code below
