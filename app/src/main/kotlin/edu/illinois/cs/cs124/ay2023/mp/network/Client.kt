@@ -90,6 +90,7 @@ object Client {
     fun getRating(summary: Summary, callback: (result: ResultMightThrow<Rating>) -> Any?) {
         val request = StringRequest(
             Request.Method.GET,
+            // /rating/CS/100
             "${CourseableApplication.SERVER_URL}/rating/${summary.subject}/${summary.number}",
             { response: String ->
                 try {
