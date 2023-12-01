@@ -85,27 +85,28 @@ object Server : Dispatcher() {
         // make sure they are not empty:
         if (courseSubject.isNotEmpty() && courseNumber.isNotEmpty()) {
             // Check if the course is matched
-            val summaryKey = "$courseSubject$courseNumber"
-            val existingRating = ratingsMap[summaryKey]
+            val checkKey = "$courseSubject$courseNumber"
+            val currentRating = ratingsMap[checkKey]
 
-            if (existingRating != null) {
-                // If the course has a rating, return the current rating
-                val ratingJSON = objectMapper.writeValueAsString(existingRating)
+            if (currentRating != null) {
+                // is it alreay has rating, return it.
+                val ratingJSON = objectMapper.writeValueAsString(currentRating)
                 return ratingJSON.makeOKJSONResponse()
-            } else {
-                // If the course doesn't have a rating, return the "not rated" rating
-                val course = courseList.find { it.subject == courseSubject && it.number == courseNumber }
+            } else { //  (if does not have rating):
 
+                // copy from previous work, return initial not rated value if exist
+                val course = courseList.find { it.subject == courseSubject && it.number == courseNumber }
                 if (course != null) {
                     val notRatedRating = Rating(course, Rating.NOT_RATED)
                     val notRatedJSON = objectMapper.writeValueAsString(notRatedRating)
                     return notRatedJSON.makeOKJSONResponse()
                 } else {
+                    // return null if not found
                     return httpNotFound
                 }
             }
         } else {
-            // Return "httpBadRequest" if either courseSubject or courseNumber is empty
+            // check for the bad request
             return httpBadRequest
         }
     }
