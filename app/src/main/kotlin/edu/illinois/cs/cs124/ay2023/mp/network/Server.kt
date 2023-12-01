@@ -117,7 +117,7 @@ object Server : Dispatcher() {
             val existingRating = ratingsMap[summaryKey]
 
             if (existingRating != null) {
-                // If the course has been rated before, update the rating
+                // If the course has been rated before, update the rating.
                 existingRating.rating = deserializedRating.rating
             } else {
                 // If the course hasn't been rated before, add it to the ratings map
