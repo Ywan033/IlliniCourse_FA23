@@ -54,7 +54,7 @@ open class Course(
     val description: String,
 ) : Summary(subject, number, label)
 
-class Rating(val summary: Summary, val rating: Float) {
+class Rating(val summary: Summary, var rating: Float) {
     companion object {
         const val NOT_RATED = -1.0f
     }

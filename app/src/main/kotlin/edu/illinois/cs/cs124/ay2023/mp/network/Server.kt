@@ -39,6 +39,11 @@ object Server : Dispatcher() {
     // private val coursesssJSON: String // add for test 1
     private var courseList = listOf<Course>() // create a list of course
 
+    private val ratingsMap = mutableMapOf<String, Rating>()
+
+    // map for the course
+    private val summariesMap = mutableMapOf<String, Summary>()
+
     /** Return the JSON with the list of course summaries. */
     private fun getSummaries(): MockResponse {
         // println("DataFetch: Server getSummaries method called")
@@ -80,19 +85,59 @@ object Server : Dispatcher() {
         // make sure they are not empty:
         if (courseSubject.isNotEmpty() && courseNumber.isNotEmpty()) {
             // check if they are matched
-            val course = courseList.find { it.subject == courseSubject && it.number == courseNumber }
-            if (course != null) {
-                // add rating things
-                val rating = Rating(course, Rating.NOT_RATED)
-                // deserialization:
-                val courseJSON = objectMapper.writeValueAsString(rating)
-                return courseJSON.makeOKJSONResponse()
+            // mapname[cs100] == null
+
+            val key = "$courseSubject$courseNumber"
+            val rAT = ratingsMap[key]
+            if (rAT != null) {
+                // Rating exists, return the rating
+                val initialRating = Rating(Summary(courseSubject, courseNumber), Rating.NOT_RATED)
+                val ratingJSON = objectMapper.writeValueAsString(initialRating)
+                return ratingJSON.makeOKJSONResponse()
             } else {
+                // If the rating doesn't exist, return a default not-rated response
                 return httpNotFound
             }
         } else {
             // return "httpBadRequest" if it is empty
             return httpBadRequest
+        }
+    }
+
+    private fun postRating(request: RecordedRequest): MockResponse {
+        val body = request.body.readUtf8()
+        // Deserialized Rating
+        val deserializedRating = objectMapper.readValue<Rating>(body)
+
+        // check for the existence
+        val summaryKey = deserializedRating.summary.subject + deserializedRating.summary.number
+        val existingSummary = summariesMap[summaryKey]
+
+        if (existingSummary != null) {
+            val existingRating = ratingsMap[summaryKey]
+
+            if (existingRating != null) {
+                // If the course has been rated before, update the rating
+                existingRating.rating = deserializedRating.rating
+            } else {
+                // If the course hasn't been rated before, add it to the ratings map
+                ratingsMap[summaryKey] = Rating(existingSummary, deserializedRating.rating)
+            }
+
+            // 1. check if teh rating is valid
+            // 2. yes -> add newRating to the map (rating)
+            // 3. bad request check
+
+            // update getRating
+
+            val redirectPath = "/rating/${deserializedRating.summary.subject}/${deserializedRating.summary.number}"
+            // update rating for course
+
+            return MockResponse()
+                .setResponseCode(HttpURLConnection.HTTP_MOVED_TEMP)
+                .setHeader("Location", redirectPath)
+        } else {
+            return httpNotFound
         }
     }
 
@@ -116,8 +161,10 @@ object Server : Dispatcher() {
             // Main dispatcher tree
             when {
                 // Used by API client to validate server
-                path == "/" && method == "GET" ->
+                path == "/" && method == "GET" -> {
+                    ratingsMap.clear()
                     MockResponse().setBody(CHECK_SERVER_RESPONSE).setResponseCode(HttpURLConnection.HTTP_OK)
+                }
 
                 // Used to reset the server during testing
                 path == "/reset/" && method == "GET" -> {
@@ -133,6 +180,8 @@ object Server : Dispatcher() {
                 //
                 // add support for rating things here
                 path.startsWith("/rating/") && method == "GET" -> getRating(path.removePrefix("/rating/"))
+
+                path == "/rating/" && method == "POST" -> postRating(request)
 
                 else ->
                     httpNotFound
@@ -166,6 +215,9 @@ object Server : Dispatcher() {
             // Deserialize as Summary and add to the list
             val summary = objectMapper.readValue<Summary>(node.toString())
             summaries += summary
+
+            // added : all original summary here
+            summariesMap[summary.subject + summary.number] = summary
         }
         // Convert the List<Summary> to a String and save it
         summariesJSON = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(summaries)
