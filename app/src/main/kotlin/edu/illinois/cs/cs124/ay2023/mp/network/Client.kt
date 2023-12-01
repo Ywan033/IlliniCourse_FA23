@@ -138,7 +138,7 @@ object Client {
             override fun getBody(): ByteArray {
                 val body = objectMapper.writeValueAsString(rating)
                 return body.toByteArray()
-                // need to serialized rating that was passed to post rating
+                // need to serialized rating that was passed to post rating.
             }
         }
         requestQueue.add(request)
