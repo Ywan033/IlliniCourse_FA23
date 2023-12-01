@@ -89,7 +89,7 @@ object Server : Dispatcher() {
             val currentRating = ratingsMap[checkKey]
 
             if (currentRating != null) {
-                // is it alreay has rating, return it.
+                // is it already has rating, return it.
                 val ratingJSON = objectMapper.writeValueAsString(currentRating)
                 return ratingJSON.makeOKJSONResponse()
             } else { //  (if does not have rating):
