@@ -117,9 +117,31 @@ object Client {
     }
 
     fun postRating(rating: Rating, callback: (course: ResultMightThrow<Rating>) -> Any?) {
-        callback(ResultMightThrow(IllegalStateException()))
-        // post: client send things to server
-        // how the client can update the rating
+        // MP3: Test 3
+        val request = object : StringRequest(
+            Request.Method.POST,
+            "${CourseableApplication.SERVER_URL}/rating/", // Deserialize
+            { response: String ->
+                try {
+                    Log.d("DataFetch", "Client received server response")
+                    val desRating: Rating = objectMapper.readValue(response) // Deserialize Rating value
+                    callback(ResultMightThrow(desRating))
+                } catch (e: JsonProcessingException) {
+                    callback(ResultMightThrow(e))
+                }
+            },
+            { error: VolleyError -> callback(ResultMightThrow(error)) },
+        ) {
+
+            override fun getBodyContentType() = "application/json; charset=utf-8"
+
+            override fun getBody(): ByteArray {
+                val body = objectMapper.writeValueAsString(rating)
+                return body.toByteArray()
+                // need to serialized rating that was passed to post rating
+            }
+        }
+        requestQueue.add(request)
     }
 
     // You should not need to modify the code below
