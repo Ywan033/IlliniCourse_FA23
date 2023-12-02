@@ -61,10 +61,10 @@ object Server : Dispatcher() {
         // make sure they are not empty:
         if (courseSubject.isNotEmpty() && courseNumber.isNotEmpty()) {
             // check if they are matched
-            val courSE = courseList.find { it.subject == courseSubject && it.number == courseNumber }
-            if (courSE != null) {
+            val checkCourse = courseList.find { it.subject == courseSubject && it.number == courseNumber }
+            if (checkCourse != null) {
                 // deserialization:
-                val courseJSON = objectMapper.writeValueAsString(courSE)
+                val courseJSON = objectMapper.writeValueAsString(checkCourse)
                 return courseJSON.makeOKJSONResponse()
             } else {
                 return httpNotFound
@@ -95,9 +95,9 @@ object Server : Dispatcher() {
             } else { //  (if does not have rating):
 
                 // copy from previous work, return initial not rated value if exist
-                val course = courseList.find { it.subject == courseSubject && it.number == courseNumber }
-                if (course != null) {
-                    val notRatedRating = Rating(course, Rating.NOT_RATED)
+                val checkCourse = courseList.find { it.subject == courseSubject && it.number == courseNumber }
+                if (checkCourse != null) {
+                    val notRatedRating = Rating(checkCourse, Rating.NOT_RATED)
                     val notRatedJSON = objectMapper.writeValueAsString(notRatedRating)
                     return notRatedJSON.makeOKJSONResponse()
                 } else {
@@ -114,37 +114,54 @@ object Server : Dispatcher() {
     private fun postRating(request: RecordedRequest): MockResponse {
         val body = request.body.readUtf8()
         // Deserialized Rating
-        val deserializedRating = objectMapper.readValue<Rating>(body)
+        try {
+            val deserializedRating = objectMapper.readValue<Rating>(body)
 
-        // check for the existence
-        val summaryKey = deserializedRating.summary.subject + deserializedRating.summary.number
-        val existingSummary = summariesMap[summaryKey]
-
-        if (existingSummary != null) {
-            val existingRating = ratingsMap[summaryKey]
-
-            if (existingRating != null) {
-                // If the course has been rated before, update the rating.
-                existingRating.rating = deserializedRating.rating
-            } else {
-                // If the course hasn't been rated before, add it to the ratings map
-                ratingsMap[summaryKey] = Rating(existingSummary, deserializedRating.rating)
-            }
-
-            // 1. check if teh rating is valid
+            // 1. check if  rating is valid
             // 2. yes -> add newRating to the map (rating)
             // 3. bad request check
 
             // update getRating
 
-            val redirectPath = "/rating/${deserializedRating.summary.subject}/${deserializedRating.summary.number}"
-            // update rating for course
+            // private var courseList = listOf<Course>() // create a list of course
 
-            return MockResponse()
-                .setResponseCode(HttpURLConnection.HTTP_MOVED_TEMP)
-                .setHeader("Location", redirectPath)
-        } else {
-            return httpNotFound
+            // private val ratingsMap = mutableMapOf<String, Rating>()
+
+            // map for the course
+            // private val summariesMap = mutableMapOf<String, Summary>()
+
+            val checkCourse = deserializedRating.summary.subject + deserializedRating.summary.number
+            val checkExisting = summariesMap[checkCourse]
+
+            if (checkExisting != null) {
+                // if the course is exist:
+                // check for its rating
+                // update rating of the exist course into the ratingMap
+                val currentRating = ratingsMap[checkCourse]
+
+                // check if the rating is null or not.
+                if (currentRating != null) {
+                    // if it is not null, which means it already had a rate value
+                    // update the current rating value into the BIG ratingMap
+                    currentRating.rating = deserializedRating.rating
+                } else {
+                    // if current rating is null, means hasn't been rated yet.
+                    // If the course hasn't been rated before, add it to the ratings map
+                    ratingsMap[checkCourse] = Rating(checkExisting, deserializedRating.rating)
+                    // updated it's course name and course rating in
+                }
+
+                val redirectPath = "/rating/${deserializedRating.summary.subject}/${deserializedRating.summary.number}"
+                // update rating for course
+
+                return MockResponse()
+                    .setResponseCode(HttpURLConnection.HTTP_MOVED_TEMP)
+                    .setHeader("Location", redirectPath)
+            } else {
+                return httpNotFound
+            }
+        } catch (e: Exception) {
+            return MockResponse().setResponseCode((HttpURLConnection.HTTP_BAD_REQUEST))
         }
     }
 
