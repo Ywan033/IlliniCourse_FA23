@@ -109,7 +109,7 @@ class MainActivity :
      */
     override fun onQueryTextChange(query: String): Boolean {
         // TODO
-        Log.d("SearchBar", "User entered: $query")
+        // Log.d("SearchBar", "User entered: $query")
 
         // filter the list
         // filter the search bar by user's input and update the list shown to the user
@@ -122,6 +122,11 @@ class MainActivity :
         }
         return true
     }
+
+    // request rating for the course and display that as well
+    // rating bar needs a way to notify the activity when the rating has been changed.
+    // when add that you will be run code when the rating has been changed
+    // and that is the place where you are going to use that client postRating method to move that rating to the server
 
     /**
      * Callback fired when the user submits a search query.

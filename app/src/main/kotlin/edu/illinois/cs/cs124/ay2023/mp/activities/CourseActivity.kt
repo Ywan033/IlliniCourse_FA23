@@ -1,10 +1,12 @@
 package edu.illinois.cs.cs124.ay2023.mp.activities
 import android.os.Bundle
 import android.util.Log
+import android.widget.RatingBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import edu.illinois.cs.cs124.ay2023.mp.R
 import edu.illinois.cs.cs124.ay2023.mp.helpers.objectMapper
+import edu.illinois.cs.cs124.ay2023.mp.models.Rating
 import edu.illinois.cs.cs124.ay2023.mp.models.Summary
 import edu.illinois.cs.cs124.ay2023.mp.network.Client
 
@@ -24,6 +26,9 @@ class CourseActivity : AppCompatActivity() {
         // set up the UI:
         // the test suite will test that you displace both the title which you can get via two string and description
         val descriptionTextView: TextView = findViewById(R.id.description)
+
+        // ratingbar
+        val ratingBar: RatingBar = findViewById(R.id.rating)
 
         // retrieve intent:
         val retrievedIntent = intent
@@ -45,8 +50,24 @@ class CourseActivity : AppCompatActivity() {
                         val title = "${updatedCourse.subject} ${updatedCourse.number}: ${updatedCourse.label} " +
                             updatedCourse.description
                         descriptionTextView.text = title
-                    } else {
-                        Log.e("CourseActivity", "ERROR HERE!!!")
+
+                        // previous rating on rating Bar from the getRating
+                        Client.getRating(newsummary) { ratingResult ->
+                            runOnUiThread {
+                                if (ratingResult.value != null) {
+                                    val initialRating = ratingResult.value!!.rating
+                                    ratingBar.rating = initialRating
+                                } else {
+                                    Log.e("CourseActivity", "Error retrieving rating from server")
+                                }
+                            }
+                        }
+                        ratingBar.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
+                            // Update the rating
+                            val updatedRating = Rating(newsummary, rating)
+                            Client.postRating(updatedRating) { postResult ->
+                            }
+                        }
                     }
                 } catch (e: Exception) {
                     Log.e("CourseActivity", "ERROR during updating UI")

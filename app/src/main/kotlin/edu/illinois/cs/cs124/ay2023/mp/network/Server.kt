@@ -39,6 +39,7 @@ object Server : Dispatcher() {
     // private val coursesssJSON: String // add for test 1
     private var courseList = listOf<Course>() // create a list of course
 
+    // map for the course rating
     private val ratingsMap = mutableMapOf<String, Rating>()
 
     // map for the course
