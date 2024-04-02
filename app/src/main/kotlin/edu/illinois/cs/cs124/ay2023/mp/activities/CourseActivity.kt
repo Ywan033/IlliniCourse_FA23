@@ -19,6 +19,7 @@ class CourseActivity : AppCompatActivity() {
         // when the request complete, update UI by using
         // runOnUiThread {   }
 
+        // 1231231
         super.onCreate(unused)
         // load my layout:
         setContentView(R.layout.activity_course)
